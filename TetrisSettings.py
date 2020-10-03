@@ -1,5 +1,3 @@
-# Settings for the TetrisGame.py
-
 # Configurations (USER)
 SIZE_SCALE = 1
 SPEED_DEFAULT = 750  # 750 MS
@@ -11,6 +9,8 @@ MIN_DEBUG_LEVEL = 10
 
 FONT_NAME = "Consolas"
 
+# Color theme referenced from:
+# https://www.mathsisfun.com/games/tetris.html
 COLORS = {
     # Display
     "BACKGROUND_BLACK": "000000",

@@ -1,5 +1,3 @@
-# Util function for the TetrisGame.py
-
 from copy import deepcopy
 from TetrisSettings import *
 
