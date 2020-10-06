@@ -40,10 +40,8 @@ class RandomAgent(BaseAgent):
 class GeneticAgent(BaseAgent):
     """ Agent that uses genetics to predict the best action """
 
-    def __init__(self, tetris: Tetris, mutation_rate: float):
+    def __init__(self):
         super().__init__()
-        self.tetris = tetris
-        self.mutation_rate = mutation_rate
 
         # Initialize weights randomly
         self.weight_height = random.random()
@@ -58,7 +56,7 @@ class GeneticAgent(BaseAgent):
         :param agent: the other parent agent
         :return: "child" agent
         """
-        child = GeneticAgent(self.tetris, self.mutation_rate)
+        child = GeneticAgent()
         # Choose weight randomly from the parents
         child.weight_height = self.weight_height if random.getrandbits(1) else agent.weight_height
         child.weight_holes = self.weight_holes if random.getrandbits(1) else agent.weight_holes
@@ -66,21 +64,17 @@ class GeneticAgent(BaseAgent):
         child.weight_line_clear = self.weight_line_clear if random.getrandbits(1) else agent.weight_line_clear
 
         # Randomly mutate weights
-        if random.random() < self.mutation_rate:
+        if random.random() < MUTATION_RATE:
             child.weight_height = TUtils.random_weight()
-        if random.random() < self.mutation_rate:
+        if random.random() < MUTATION_RATE:
             child.weight_holes = TUtils.random_weight()
-        if random.random() < self.mutation_rate:
+        if random.random() < MUTATION_RATE:
             child.weight_bumpiness = TUtils.random_weight()
-        if random.random() < self.mutation_rate:
+        if random.random() < MUTATION_RATE:
             child.weight_line_clear = TUtils.random_weight()
 
         # Return completed child model
         return child
-
-    def get_score(self):
-        # Return fitness score
-        return self.get_fitness(self.tetris.board)
 
     def get_fitness(self, board):
         """ Utility method to calculate fitness score """

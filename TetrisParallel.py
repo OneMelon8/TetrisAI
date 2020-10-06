@@ -45,32 +45,31 @@ gen_generation = 1  # when this is set to -1, genetic agent is not used
 gen_previous_best_score = 0.0
 gen_top_score = 0.0
 
-gen_weight_height = 0.0
-gen_weight_holes = 0.0
-gen_weight_bumpiness = 0.0
-gen_weight_line_cleared = 0.0
+# Temp
+count = 0
 
 
 def update(screen):
     """ Called every frame by the runner, handles updates each frame """
     global GAME_COUNT, AGENTS
     global gen_generation, gen_previous_best_score, gen_top_score
-    global gen_weight_height, gen_weight_holes, gen_weight_bumpiness, gen_weight_line_cleared
+    global count
+    count += 1
 
     # Check if all agents have reached game over state
-    if all(tetris.game_over for tetris in TETRIS_GAMES):
-        # Everyone "died", select best one and cross over
-        parents = sorted(AGENTS, key=lambda agent: agent.get_score(), reverse=True)
+    if all(tetris.game_over for tetris in TETRIS_GAMES) or count % 1000 == 0:
+        count = 0
+        # Everyone "died" or time's up, select best one and cross over
+        combos = zip(AGENTS, TETRIS_GAMES)
+        parents = sorted(combos, key=lambda combo: combo[1].score, reverse=True)
         # Update generation information
         gen_generation += 1
-        gen_previous_best_score = parents[0].get_score()
+        gen_previous_best_score = parents[0][1].score
         if gen_previous_best_score > gen_top_score:
             gen_top_score = gen_previous_best_score
 
-        gen_weight_height = parents[0].weight_height
-        gen_weight_holes = parents[0].weight_holes
-        gen_weight_bumpiness = parents[0].weight_bumpiness
-        gen_weight_line_cleared = parents[0].weight_line_clear
+        # Undo zipping
+        parents = [a[0] for a in parents]
 
         # Discard 50% of population
         parents = parents[:GAME_COUNT // 2]
@@ -125,23 +124,27 @@ def draw(screen):
 
     # Draw genetics
     if gen_generation > -1:
-        draw_text(f"Generation #{gen_generation}", screen, (curr_x, curr_y))
+        curr_y += 20
+        draw_text(f"Generation #{gen_generation}", screen, (curr_x, curr_y), font_size=24)
+        curr_y += 35
+        draw_text(f"Time Limit: {count}/1000", screen, (curr_x, curr_y))
         curr_y += 20
         draw_text(f"Prev H.Score: {gen_previous_best_score:.1f}", screen, (curr_x, curr_y))
         curr_y += 20
         draw_text(f"All Time H.S: {gen_top_score:.1f}", screen, (curr_x, curr_y))
         curr_y += 40
 
-        draw_text(f"Weights:", screen, (curr_x, curr_y), font_size=32)
-        curr_y += 40
-        draw_text(f"Agg Height: {gen_weight_height:.1f}", screen, (curr_x, curr_y))
-        curr_y += 20
-        draw_text(f"Hole Count: {gen_weight_holes:.1f}", screen, (curr_x, curr_y))
-        curr_y += 20
-        draw_text(f"Smoothness:  {gen_weight_bumpiness:.1f}", screen, (curr_x, curr_y))
-        curr_y += 20
-        draw_text(f"Line Clear: {gen_weight_line_cleared:.1f}", screen, (curr_x, curr_y))
-        curr_y += 20
+        if len(best_indexes) > 0:
+            draw_text(f"Agent #{best_indexes[0]}:", screen, (curr_x, curr_y), font_size=24)
+            curr_y += 35
+            draw_text(f">> Agg Height: {AGENTS[best_indexes[0]].weight_height:.1f}", screen, (curr_x, curr_y))
+            curr_y += 20
+            draw_text(f">> Hole Count: {AGENTS[best_indexes[0]].weight_holes:.1f}", screen, (curr_x, curr_y))
+            curr_y += 20
+            draw_text(f">> Bumpiness:  {AGENTS[best_indexes[0]].weight_bumpiness:.1f}", screen, (curr_x, curr_y))
+            curr_y += 20
+            draw_text(f">> Line Clear: {AGENTS[best_indexes[0]].weight_line_clear:.1f}", screen, (curr_x, curr_y))
+            curr_y += 20
 
     # Highlight current best(s)
     for a in best_indexes:
@@ -188,6 +191,10 @@ def highlight(screen, index: int, mode: int):
 def get_high_score():
     best_indexes, best_score = [], 0
     for a in range(GAME_COUNT):
+        # Ignore dead games
+        if TETRIS_GAMES[a].game_over:
+            continue
+        # Get score
         score = TETRIS_GAMES[a].score
         if score > best_score:
             best_indexes = [a]
@@ -287,7 +294,7 @@ if __name__ == "__main__":
     for _ in range(GAME_COUNT):
         game = Tetris()
         TETRIS_GAMES.append(game)
-        AGENTS.append(GeneticAgent(game, mutation_rate=0.1))
+        AGENTS.append(GeneticAgent())
 
     while True:
         # Each loop iteration is 1 frame

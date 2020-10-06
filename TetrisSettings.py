@@ -54,11 +54,13 @@ SCREEN_WIDTH = int(360 / SCREEN_RATIO * SIZE_SCALE)
 SCREEN_HEIGHT = int(720 * SIZE_SCALE)
 MAX_FPS = 30
 
+MUTATION_RATE = 0.1
+
 ########################
 # Score Configurations #
 ########################
-MULTI_SCORE_ALGORITHM = lambda lines_cleared: 3 ** lines_cleared
-PER_STEP_SCORE_GAIN = 0.1
+MULTI_SCORE_ALGORITHM = lambda lines_cleared: 5 ** lines_cleared
+PER_STEP_SCORE_GAIN = 0.001
 
 # Fitness function configuration
 # https://luckytoilet.wordpress.com/2011/05/27/coding-a-tetris-ai-using-a-genetic-algorithm/
