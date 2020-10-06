@@ -119,7 +119,7 @@ def draw(screen):
     best_indexes, best_score = get_high_score()
     draw_text(f"High Score: {best_score:.1f}", screen, (curr_x, curr_y))
     curr_y += 20
-    draw_text(f"H.S. Agent: {SEP.join(map(str, best_indexes))}", screen, (curr_x, curr_y))
+    draw_text(f"Best Agent: {SEP.join(map(str, best_indexes))}", screen, (curr_x, curr_y))
     curr_y += 20
 
     # Draw genetics
@@ -129,29 +129,48 @@ def draw(screen):
         curr_y += 35
         draw_text(f"Time Limit: {count}/1000", screen, (curr_x, curr_y))
         curr_y += 20
+
+        survivor = len([a for a in TETRIS_GAMES if not a.game_over])
+        draw_text(f"Survivors: {survivor}/{GAME_COUNT} ({survivor / GAME_COUNT * 100:.1f}%)", screen, (curr_x, curr_y))
+        curr_y += 20
         draw_text(f"Prev H.Score: {gen_previous_best_score:.1f}", screen, (curr_x, curr_y))
         curr_y += 20
         draw_text(f"All Time H.S: {gen_top_score:.1f}", screen, (curr_x, curr_y))
         curr_y += 40
 
-        if len(best_indexes) > 0:
-            draw_text(f"Agent #{best_indexes[0]}:", screen, (curr_x, curr_y), font_size=24)
+        # Display selected agent
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+        grid_x, grid_y = mouse_x // (GAME_WIDTH + PADDING), mouse_y // (GAME_HEIGHT + PADDING)
+        selected = grid_y * COL_COUNT + grid_x
+
+        agent_index = -1
+        highlight_selected = False
+        if selected < GAME_COUNT and mouse_x < (GAME_WIDTH + PADDING) * COL_COUNT:
+            agent_index = selected
+            highlight_selected = True
+        elif len(best_indexes) > 0:
+            agent_index = best_indexes[0]
+
+        if agent_index != -1:
+            draw_text(f"Agent #{agent_index}:", screen, (curr_x, curr_y), font_size=24)
             curr_y += 35
-            draw_text(f">> Agg Height: {AGENTS[best_indexes[0]].weight_height:.1f}", screen, (curr_x, curr_y))
+            draw_text(f">> Agg Height: {AGENTS[agent_index].weight_height:.1f}", screen, (curr_x, curr_y))
             curr_y += 20
-            draw_text(f">> Hole Count: {AGENTS[best_indexes[0]].weight_holes:.1f}", screen, (curr_x, curr_y))
+            draw_text(f">> Hole Count: {AGENTS[agent_index].weight_holes:.1f}", screen, (curr_x, curr_y))
             curr_y += 20
-            draw_text(f">> Bumpiness:  {AGENTS[best_indexes[0]].weight_bumpiness:.1f}", screen, (curr_x, curr_y))
+            draw_text(f">> Bumpiness:  {AGENTS[agent_index].weight_bumpiness:.1f}", screen, (curr_x, curr_y))
             curr_y += 20
-            draw_text(f">> Line Clear: {AGENTS[best_indexes[0]].weight_line_clear:.1f}", screen, (curr_x, curr_y))
+            draw_text(f">> Line Clear: {AGENTS[agent_index].weight_line_clear:.1f}", screen, (curr_x, curr_y))
             curr_y += 20
+            if highlight_selected:
+                highlight(screen, selected, mode=1)
+            else:
+                # Highlight current best(s)
+                for a in best_indexes:
+                    highlight(screen, a, mode=0)
 
-    # Highlight current best(s)
-    for a in best_indexes:
-        highlight(screen, a, mode=0)
-
-    # Update display
-    pygame.display.update()
+        # Update display
+        pygame.display.update()
 
 
 def highlight(screen, index: int, mode: int):
