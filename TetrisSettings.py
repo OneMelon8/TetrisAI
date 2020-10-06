@@ -18,6 +18,7 @@ COLORS = {
     "BACKGROUND_LIGHT": "00263f",
     "TRIANGLE_GRAY": "efe6ff",
     "WHITE": "ffffff",
+    "RED": "ff0000",
     # Tetris pieces
     "TILE_LINE": "ffb900",
     "TILE_L": "2753f1",
@@ -26,6 +27,9 @@ COLORS = {
     "TILE_S_REVERSED": "11c5bf",
     "TILE_T": "ae81ff",
     "TILE_CUBE": "e94659",
+    # Highlights
+    "HIGHLIGHT_GREEN": "22ee22",
+    "HIGHLIGHT_RED": "ee2222",
 }
 
 MESSAGES = {
@@ -39,6 +43,8 @@ MESSAGES = {
     "NEXT_TILE": "Next tile: {}",
 }
 
+SEP = ", "
+
 # Configurations (SYSTEM)
 GRID_ROW_COUNT = 20
 GRID_COL_COUNT = 10
@@ -51,8 +57,8 @@ MAX_FPS = 30
 ########################
 # Score Configurations #
 ########################
-MULTI_SCORE_ALGORITHM = lambda lines_cleared: 5 ** lines_cleared
-PER_STEP_SCORE_GAIN = 0.0
+MULTI_SCORE_ALGORITHM = lambda lines_cleared: 3 ** lines_cleared
+PER_STEP_SCORE_GAIN = 0.1
 
 # Fitness function configuration
 # https://luckytoilet.wordpress.com/2011/05/27/coding-a-tetris-ai-using-a-genetic-algorithm/

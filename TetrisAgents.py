@@ -27,6 +27,7 @@ class BaseAgent:
         :param offsets: x, y offsets of the current tile (int, int)
         :return: list of actions to take, actions will be executed in order
         """
+        pass
 
 
 class RandomAgent(BaseAgent):
@@ -36,23 +37,76 @@ class RandomAgent(BaseAgent):
         return [random.randint(0, 8) for _ in range(10)]
 
 
-class HeuristicAgent(BaseAgent):
-    """ Agent that uses heuristic to calculate the best action """
+class GeneticAgent(BaseAgent):
+    """ Agent that uses genetics to predict the best action """
 
-    def calculate_actions(self, board, current_tile, next_tile, offsets):
+    def __init__(self, tetris: Tetris, mutation_rate: float):
+        super().__init__()
+        self.tetris = tetris
+        self.mutation_rate = mutation_rate
+
+        # Initialize weights randomly
+        self.weight_height = random.random()
+        self.weight_holes = random.random()
+        self.weight_bumpiness = random.random()
+        self.weight_line_clear = random.random()
+
+    def cross_over(self, agent):
         """
-        Use heuristics to obtain best possible step
-          - Tiles: [curr_tile, next_tile]
-          - Rotations: [rot0, rot1, rot2, rot3]
-          - X coord(s): [TileX 0, ..., TileX N]
+        "Breed" with another agent to produce a "child"
+
+        :param agent: the other parent agent
+        :return: "child" agent
         """
+        child = GeneticAgent(self.tetris, self.mutation_rate)
+        # Choose weight randomly from the parents
+        child.weight_height = self.weight_height if random.getrandbits(1) else agent.weight_height
+        child.weight_holes = self.weight_holes if random.getrandbits(1) else agent.weight_holes
+        child.weight_bumpiness = self.weight_bumpiness if random.getrandbits(1) else agent.weight_bumpiness
+        child.weight_line_clear = self.weight_line_clear if random.getrandbits(1) else agent.weight_line_clear
+
+        # Randomly mutate weights
+        if random.random() < self.mutation_rate:
+            child.weight_height = TUtils.random_weight()
+        if random.random() < self.mutation_rate:
+            child.weight_holes = TUtils.random_weight()
+        if random.random() < self.mutation_rate:
+            child.weight_bumpiness = TUtils.random_weight()
+        if random.random() < self.mutation_rate:
+            child.weight_line_clear = TUtils.random_weight()
+
+        # Return completed child model
+        return child
+
+    def get_score(self):
+        # Return fitness score
+        return self.get_fitness(self.tetris.board)
+
+    def get_fitness(self, board):
+        """ Utility method to calculate fitness score """
+        score = 0
+        # Check if the board has any completed rows
+        future_board, clear_count = TUtils.get_board_and_lines_cleared(board)
+        # Calculate the line-clear score and apply weights
+        score += self.weight_line_clear * clear_count
+        # Calculate the aggregate height of future board and apply weights
+        score += self.weight_height * sum(TUtils.get_col_heights(future_board))
+        # Calculate the holes score and apply weights
+        score += self.weight_holes * TUtils.get_hole_count(future_board)
+        # Calculate the "smoothness" score and apply weights
+        score += self.weight_bumpiness * TUtils.get_bumpiness(future_board)
+        # Return the final score
+        return score
+
+    # Overrides parent's "abstract" method
+    def calculate_actions(self, board, current_tile, next_tile, offsets) -> List[int]:
         best_fitness = -9999
         best_tile_index = -1
         best_rotation = -1
         best_x = -1
 
         tiles = [current_tile, next_tile]
-        # 2 tiles: current and next
+        # 2 tiles: current and next (swappable)
         for tile_index in range(len(tiles)):
             tile = tiles[tile_index]
             # Rotation: 0-3 times (4x is the same as 0x)
@@ -60,7 +114,7 @@ class HeuristicAgent(BaseAgent):
                 # X movement
                 for x in range(0, GRID_COL_COUNT - len(tile[0]) + 1):
                     new_board = TUtils.get_future_board_with_tile(board, tile, (x, offsets[1]), True)
-                    fitness = TUtils.get_fitness_score(new_board)
+                    fitness = self.get_fitness(new_board)
                     if fitness > best_fitness:
                         best_fitness = fitness
                         best_tile_index = tile_index
@@ -69,6 +123,7 @@ class HeuristicAgent(BaseAgent):
                 # Rotate tile (prep for next iteration)
                 tile = TUtils.get_rotated_tile(tile)
 
+        ##################################################################################
         # Obtained best stats, now convert them into sequences of actions
         # Action = index of { NOTHING, L, R, 2L, 2R, ROTATE, SWAP, FAST_FALL, INSTA_FALL }
         actions = []

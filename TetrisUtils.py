@@ -1,3 +1,4 @@
+import random
 from copy import deepcopy
 from TetrisSettings import *
 
@@ -63,9 +64,9 @@ def get_color_tuple(color_hex):
     return tuple(int(color_hex[i:i + 2], 16) for i in (0, 2, 4))
 
 
-###########################
-# Lee's Fitness Algorithm #
-###########################
+######################
+# Fitness Algorithms #
+######################
 # Reference to https://codemyroad.wordpress.com/2013/04/14/tetris-ai-the-near-perfect-player/
 def get_fitness_score(board):
     board, score_count = get_board_and_lines_cleared(board)
@@ -130,3 +131,7 @@ def get_board_and_lines_cleared(board):
         board.insert(0, [0] * GRID_COL_COUNT)
         score_count += 1
     return board, score_count
+
+
+def random_weight():
+    return random.uniform(-1, 1)

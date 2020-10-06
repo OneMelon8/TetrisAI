@@ -56,8 +56,8 @@ class Tetris:
         :param action: index of [NOTHING, L, R, 2L, 2R, ROTATE, SWAP, FAST_FALL, INSTANT_FALL]
         """
         assert action in list(range(8 + 1)), "Invalid action, use 0-8 for actions"
+        # If game over, ignore step request until reset() is called
         if self.game_over:
-            print("Cannot step because game is over!")
             return
         # Move tile
         if action in [1, 2, 3, 4]:
