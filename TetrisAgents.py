@@ -4,6 +4,7 @@ from typing import *
 from Tetris import Tetris
 import TetrisUtils as TUtils
 from TetrisSettings import *
+from TetrisParallel import MUTATION_RATE
 
 
 class BaseAgent:

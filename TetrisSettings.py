@@ -54,8 +54,6 @@ SCREEN_WIDTH = int(360 / SCREEN_RATIO * SIZE_SCALE)
 SCREEN_HEIGHT = int(720 * SIZE_SCALE)
 MAX_FPS = 30
 
-MUTATION_RATE = 0.1  # 10% mutation chance
-
 ########################
 # Score Configurations #
 ########################
@@ -76,6 +74,10 @@ STEP_ACTION = True
 
 ACTIONS = ["NOTHING", "L", "R", "2L", "2R", "ROTATE", "SWAP", "FAST_FALL", "INSTA_FALL"]
 
+
+######################
+# Tile Configuration #
+######################
 TILES = ["LINE", "L", "L_REVERSED", "S", "S_REVERSED", "T", "CUBE"]
 TILE_SHAPES = {
     "LINE": [[1, 1, 1, 1]],

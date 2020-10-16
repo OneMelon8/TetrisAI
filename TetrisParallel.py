@@ -7,18 +7,18 @@ import TetrisUtils as TUtils
 from TetrisSettings import *
 from TetrisAgents import *
 
-###################
-# Global Settings #
-###################
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# Parallel Training Settings
+
 # Parallel Tetris game count
 ROW_COUNT = 4
 COL_COUNT = 10
-GAME_COUNT = ROW_COUNT * COL_COUNT
+GAME_COUNT = ROW_COUNT * COL_COUNT  # no need to modify
 
 # Size of each Tetris display
 GAME_WIDTH = 100
-GAME_HEIGHT = GAME_WIDTH * 2
-GAME_GRID_SIZE = GAME_WIDTH / GRID_COL_COUNT
+GAME_HEIGHT = GAME_WIDTH * 2  # no need to modify
+GAME_GRID_SIZE = GAME_WIDTH / GRID_COL_COUNT  # no need to modify
 
 # Size of padding
 PADDING = 10
@@ -27,6 +27,12 @@ PADDING_STATS = 300
 # Screen size (automatically calculated)
 SCREEN_WIDTH = GAME_WIDTH * COL_COUNT + PADDING * (COL_COUNT + 1) + PADDING_STATS
 SCREEN_HEIGHT = GAME_HEIGHT * ROW_COUNT + PADDING * (ROW_COUNT + 1)
+
+# Mutation Rate
+MUTATION_RATE = 0.1  # 10% mutation chance
+
+# End of Settings
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 ####################
 # Global Variables #
