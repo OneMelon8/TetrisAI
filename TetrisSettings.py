@@ -5,7 +5,7 @@ SPEED_SCALE_ENABLED = True  # game gets faster with more points?
 SPEED_SCALE = 0.05  # speed = max(50, 750 - SCORE * SPEED_SCALE)
 DISPLAY_PREDICTION = True
 HAS_DISPLAY = True
-MIN_DEBUG_LEVEL = 10
+MIN_DEBUG_LEVEL = 1
 
 FONT_NAME = "Consolas"
 
@@ -54,7 +54,7 @@ SCREEN_WIDTH = int(360 / SCREEN_RATIO * SIZE_SCALE)
 SCREEN_HEIGHT = int(720 * SIZE_SCALE)
 MAX_FPS = 30
 
-MUTATION_RATE = 0.1
+MUTATION_RATE = 0.1  # 10% mutation chance
 
 ########################
 # Score Configurations #
@@ -62,13 +62,11 @@ MUTATION_RATE = 0.1
 MULTI_SCORE_ALGORITHM = lambda lines_cleared: 5 ** lines_cleared
 PER_STEP_SCORE_GAIN = 0.001
 
-# Fitness function configuration
-# https://luckytoilet.wordpress.com/2011/05/27/coding-a-tetris-ai-using-a-genetic-algorithm/
-# https://codemyroad.wordpress.com/2013/04/14/tetris-ai-the-near-perfect-player/
-WEIGHT_AGGREGATE_HEIGHT = -0.03
-WEIGHT_HOLES = -7.5
-WEIGHT_BUMPINESS = -0.1845
-WEIGHT_LINE_CLEARED = 8
+# "Optimal" fitness function configuration
+WEIGHT_AGGREGATE_HEIGHT = -0.3
+WEIGHT_HOLES = -0.75
+WEIGHT_BUMPINESS = -0.18
+WEIGHT_LINE_CLEARED = 1.3
 
 ######################
 # STEP Configuration #

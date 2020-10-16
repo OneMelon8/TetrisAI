@@ -1,7 +1,6 @@
 """ This file runs multiple instances of the Tetris class in synchronization with a PyGame display """
 
 # Imports
-from time import sleep
 import pygame
 from Tetris import Tetris
 import TetrisUtils as TUtils
@@ -45,20 +44,21 @@ gen_generation = 1  # when this is set to -1, genetic agent is not used
 gen_previous_best_score = 0.0
 gen_top_score = 0.0
 
-# Temp
-count = 0
+# Set a time limit so no forever games
+time_elapsed = 0
+time_limit = 1000
 
 
 def update(screen):
     """ Called every frame by the runner, handles updates each frame """
     global GAME_COUNT, AGENTS
     global gen_generation, gen_previous_best_score, gen_top_score
-    global count
-    count += 1
+    global time_elapsed, time_limit
+    time_elapsed += 1
 
     # Check if all agents have reached game over state
-    if all(tetris.game_over for tetris in TETRIS_GAMES) or count % 1000 == 0:
-        count = 0
+    if all(tetris.game_over for tetris in TETRIS_GAMES) or (time_limit != -1 and time_elapsed % time_limit == 0):
+        time_elapsed = 0
         # Everyone "died" or time's up, select best one and cross over
         combos = zip(AGENTS, TETRIS_GAMES)
         parents = sorted(combos, key=lambda combo: combo[1].score, reverse=True)
@@ -127,7 +127,7 @@ def draw(screen):
         curr_y += 20
         draw_text(f"Generation #{gen_generation}", screen, (curr_x, curr_y), font_size=24)
         curr_y += 35
-        draw_text(f"Time Limit: {count}/1000", screen, (curr_x, curr_y))
+        draw_text(f"Time Limit: {time_elapsed}/{time_limit}", screen, (curr_x, curr_y))
         curr_y += 20
 
         survivor = len([a for a in TETRIS_GAMES if not a.game_over])
@@ -311,11 +311,15 @@ if __name__ == "__main__":
     # Initialize Tetris modules and agents
     print(f">> Initializing {GAME_COUNT} Tetris agent(s)...")
     for _ in range(GAME_COUNT):
-        game = Tetris()
-        TETRIS_GAMES.append(game)
-        AGENTS.append(GeneticAgent())
+        TETRIS_GAMES.append(Tetris())
+        agent = GeneticAgent()
+        # agent.set_op()
+        # agent.weight_height = -333
+        # agent.weight_bumpiness = -333
+        # agent.weight_holes = 3
+        AGENTS.append(agent)
 
+    print(f">> Initialization complete! Let the show begin!")
     while True:
         # Each loop iteration is 1 frame
-        # sleep(0.05)
         update(display_screen)

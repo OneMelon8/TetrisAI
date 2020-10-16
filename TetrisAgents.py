@@ -27,7 +27,11 @@ class BaseAgent:
         :param offsets: x, y offsets of the current tile (int, int)
         :return: list of actions to take, actions will be executed in order
         """
-        pass
+        # Overridden by sub-classes
+        return [0]
+
+    def zot(self):
+        """ Why not? """
 
 
 class RandomAgent(BaseAgent):
@@ -94,6 +98,15 @@ class GeneticAgent(BaseAgent):
 
     # Overrides parent's "abstract" method
     def calculate_actions(self, board, current_tile, next_tile, offsets) -> List[int]:
+        """
+        Calculate action sequence based on the agent's prediction
+
+        :param board: the current Tetris board
+        :param current_tile: the current Tetris tile
+        :param next_tile: the next Tetris tile (swappable)
+        :param offsets: the current Tetris tile's coordinates
+        :return: list of actions (integers) that should be executed in order
+        """
         best_fitness = -9999
         best_tile_index = -1
         best_rotation = -1
@@ -133,3 +146,63 @@ class GeneticAgent(BaseAgent):
             actions.append(ACTIONS.index(("" if magnitude == 1 else "2") + ("R" if direction == 1 else "L")))
         actions.append(ACTIONS.index("INSTA_FALL"))
         return actions
+
+    def set_op(self):
+        """ Demo function: sets all weights to "optimal" """
+        self.weight_height = WEIGHT_AGGREGATE_HEIGHT
+        self.weight_holes = WEIGHT_HOLES
+        self.weight_bumpiness = WEIGHT_BUMPINESS
+        self.weight_line_clear = WEIGHT_LINE_CLEARED
+
+
+class GeneticAgentTutorial(BaseAgent):
+    """ Agent that uses genetics to predict the best action """
+
+    def __init__(self):
+        super().__init__()
+        # TODO: Initialize weights randomly
+        pass
+
+    def cross_over(self, agent):
+        """
+        "Breed" with another agent to produce a "child"
+
+        :param agent: the other parent agent
+        :return: "child" agent
+        """
+        self.zot()
+        agent.zot()
+
+        # Create a new agent (the child agent)
+        child = GeneticAgent()
+
+        # TODO: randomly assign weights from both parents
+        pass
+
+        # TODO: randomly mutate weights
+        pass
+
+        # Return completed child model
+        return child
+
+    def get_fitness(self, board):
+        """ Utility method to calculate fitness score """
+        self.zot()
+        score = 0
+        # Check if the board has any completed rows
+        future_board, rows_cleared = TUtils.get_board_and_lines_cleared(board)
+        # Calculate fitness score for the board
+        # TODO: calculate the aggregate height of the board and apply weights
+        pass
+
+        # TODO: count the holes and apply weights
+        pass
+
+        # TODO: calculate the "bumpiness" score and apply weights
+        pass
+
+        # TODO: Calculate the line-clear score and apply weights
+        pass
+
+        # Return the final score
+        return score
