@@ -1,5 +1,6 @@
 # Tetris Workshop -- AI @ UCI
 This repository is for the Fall 2020 week #2 workshop of the Artificial Intelligence at UCI club<br>
+Corresponding workshop video: https://youtu.be/ptUXxWumxfE<br>
 Learn more about the club here: https://aiclub.ics.uci.edu/<br>
 AI @ UCI Discord server: https://discord.gg/PRF9abQ<br>
 <br>
