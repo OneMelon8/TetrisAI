@@ -31,9 +31,6 @@ class BaseAgent:
         # Overridden by sub-classes
         return [0]
 
-    def zot(self):
-        """ Why not? """
-
 
 class RandomAgent(BaseAgent):
     """ Agent that randomly picks actions """
@@ -47,12 +44,29 @@ class GeneticAgent(BaseAgent):
 
     def __init__(self):
         super().__init__()
+        # TODO: Initialize weights randomly
+        pass
 
-        # Initialize weights randomly
-        self.weight_height = random.random()
-        self.weight_holes = random.random()
-        self.weight_bumpiness = random.random()
-        self.weight_line_clear = random.random()
+    def get_fitness(self, board):
+        """ Utility method to calculate fitness score """
+        score = 0
+        # Check if the board has any completed rows
+        future_board, rows_cleared = TUtils.get_board_and_lines_cleared(board)
+        # TODO: calculate fitness score for the board
+        # TODO: calculate the aggregate height of the board and apply weights
+        pass
+
+        # TODO: count the holes and apply weights
+        pass
+
+        # TODO: calculate the "bumpiness" score and apply weights
+        pass
+
+        # TODO: Calculate the line-clear score and apply weights
+        pass
+
+        # Return the final score
+        return score
 
     def cross_over(self, agent):
         """
@@ -61,41 +75,17 @@ class GeneticAgent(BaseAgent):
         :param agent: the other parent agent
         :return: "child" agent
         """
+        # Create a new agent (the child agent)
         child = GeneticAgent()
-        # Choose weight randomly from the parents
-        child.weight_height = self.weight_height if random.getrandbits(1) else agent.weight_height
-        child.weight_holes = self.weight_holes if random.getrandbits(1) else agent.weight_holes
-        child.weight_bumpiness = self.weight_bumpiness if random.getrandbits(1) else agent.weight_bumpiness
-        child.weight_line_clear = self.weight_line_clear if random.getrandbits(1) else agent.weight_line_clear
 
-        # Randomly mutate weights
-        if random.random() < MUTATION_RATE:
-            child.weight_height = TUtils.random_weight()
-        if random.random() < MUTATION_RATE:
-            child.weight_holes = TUtils.random_weight()
-        if random.random() < MUTATION_RATE:
-            child.weight_bumpiness = TUtils.random_weight()
-        if random.random() < MUTATION_RATE:
-            child.weight_line_clear = TUtils.random_weight()
+        # TODO: randomly assign weights from both parents
+        pass
+
+        # TODO: randomly mutate weights
+        pass
 
         # Return completed child model
         return child
-
-    def get_fitness(self, board):
-        """ Utility method to calculate fitness score """
-        score = 0
-        # Check if the board has any completed rows
-        future_board, clear_count = TUtils.get_board_and_lines_cleared(board)
-        # Calculate the line-clear score and apply weights
-        score += self.weight_line_clear * clear_count
-        # Calculate the aggregate height of future board and apply weights
-        score += self.weight_height * sum(TUtils.get_col_heights(future_board))
-        # Calculate the holes score and apply weights
-        score += self.weight_holes * TUtils.get_hole_count(future_board)
-        # Calculate the "smoothness" score and apply weights
-        score += self.weight_bumpiness * TUtils.get_bumpiness(future_board)
-        # Return the final score
-        return score
 
     # Overrides parent's "abstract" method
     def calculate_actions(self, board, current_tile, next_tile, offsets) -> List[int]:
@@ -148,21 +138,34 @@ class GeneticAgent(BaseAgent):
         actions.append(ACTIONS.index("INSTA_FALL"))
         return actions
 
-    def set_op(self):
-        """ Demo function: sets all weights to "optimal" """
-        self.weight_height = WEIGHT_AGGREGATE_HEIGHT
-        self.weight_holes = WEIGHT_HOLES
-        self.weight_bumpiness = WEIGHT_BUMPINESS
-        self.weight_line_clear = WEIGHT_LINE_CLEARED
 
-
-class GeneticAgentTutorial(BaseAgent):
+class GeneticAgentComplete(GeneticAgent):
     """ Agent that uses genetics to predict the best action """
 
     def __init__(self):
         super().__init__()
-        # TODO: Initialize weights randomly
-        pass
+
+        # Initialize weights randomly
+        self.weight_height = random.random()
+        self.weight_holes = random.random()
+        self.weight_bumpiness = random.random()
+        self.weight_line_clear = random.random()
+
+    def get_fitness(self, board):
+        """ Utility method to calculate fitness score """
+        score = 0
+        # Check if the board has any completed rows
+        future_board, clear_count = TUtils.get_board_and_lines_cleared(board)
+        # Calculate the line-clear score and apply weights
+        score += self.weight_line_clear * clear_count
+        # Calculate the aggregate height of future board and apply weights
+        score += self.weight_height * sum(TUtils.get_col_heights(future_board))
+        # Calculate the holes score and apply weights
+        score += self.weight_holes * TUtils.get_hole_count(future_board)
+        # Calculate the "smoothness" score and apply weights
+        score += self.weight_bumpiness * TUtils.get_bumpiness(future_board)
+        # Return the final score
+        return score
 
     def cross_over(self, agent):
         """
@@ -171,39 +174,22 @@ class GeneticAgentTutorial(BaseAgent):
         :param agent: the other parent agent
         :return: "child" agent
         """
-        self.zot()
-        agent.zot()
+        child = GeneticAgentComplete()
+        # Choose weight randomly from the parents
+        child.weight_height = self.weight_height if random.getrandbits(1) else agent.weight_height
+        child.weight_holes = self.weight_holes if random.getrandbits(1) else agent.weight_holes
+        child.weight_bumpiness = self.weight_bumpiness if random.getrandbits(1) else agent.weight_bumpiness
+        child.weight_line_clear = self.weight_line_clear if random.getrandbits(1) else agent.weight_line_clear
 
-        # Create a new agent (the child agent)
-        child = GeneticAgent()
-
-        # TODO: randomly assign weights from both parents
-        pass
-
-        # TODO: randomly mutate weights
-        pass
+        # Randomly mutate weights
+        if random.random() < MUTATION_RATE:
+            child.weight_height = TUtils.random_weight()
+        if random.random() < MUTATION_RATE:
+            child.weight_holes = TUtils.random_weight()
+        if random.random() < MUTATION_RATE:
+            child.weight_bumpiness = TUtils.random_weight()
+        if random.random() < MUTATION_RATE:
+            child.weight_line_clear = TUtils.random_weight()
 
         # Return completed child model
         return child
-
-    def get_fitness(self, board):
-        """ Utility method to calculate fitness score """
-        self.zot()
-        score = 0
-        # Check if the board has any completed rows
-        future_board, rows_cleared = TUtils.get_board_and_lines_cleared(board)
-        # Calculate fitness score for the board
-        # TODO: calculate the aggregate height of the board and apply weights
-        pass
-
-        # TODO: count the holes and apply weights
-        pass
-
-        # TODO: calculate the "bumpiness" score and apply weights
-        pass
-
-        # TODO: Calculate the line-clear score and apply weights
-        pass
-
-        # Return the final score
-        return score

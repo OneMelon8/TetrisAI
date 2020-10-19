@@ -318,12 +318,7 @@ if __name__ == "__main__":
     print(f">> Initializing {GAME_COUNT} Tetris agent(s)...")
     for _ in range(GAME_COUNT):
         TETRIS_GAMES.append(Tetris())
-        agent = GeneticAgent()
-        # agent.set_op()
-        # agent.weight_height = -333
-        # agent.weight_bumpiness = -333
-        # agent.weight_holes = 3
-        AGENTS.append(agent)
+        AGENTS.append(GeneticAgent())
 
     print(f">> Initialization complete! Let the show begin!")
     while True:
